@@ -1,0 +1,19 @@
+{
+  "name": "proyecto-venta-online-dhernandez-2020394",
+  "version": "1.0.0",
+  "description": "servidor dhernandez-2020394",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dhernandez2020394/proyecto-venta-online-dhernandez-2020394.git"
+  },
+  "author": "Diego Enrique Hernandez Cholotio",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dhernandez2020394/proyecto-venta-online-dhernandez-2020394/issues"
+  },
+  "homepage": "https://github.com/dhernandez2020394/proyecto-venta-online-dhernandez-2020394#readme"
+}
