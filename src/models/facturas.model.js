@@ -13,4 +13,4 @@ const facturasSchema = new Schema({
     totalCarrito: Number
 });
 
-module.esports = mongoose.model('Facturas', facturasSchema);
+module.exports = mongoose.model('Facturas', facturasSchema);

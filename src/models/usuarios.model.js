@@ -19,4 +19,4 @@ const usuarioSchema = new Schema({
     }]
 });
 
-module.esports = mongoose.model('Usuarios', usuarioSchema);
+module.exports = mongoose.model('Usuarios', usuarioSchema);

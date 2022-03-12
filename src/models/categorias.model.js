@@ -5,4 +5,4 @@ const categoriaSchema = new Schema({
     categoria: String
 });
 
-module.esports = mongoose.model('Categoria', categoriaSchema);
+module.exports = mongoose.model('Categorias', categoriaSchema);

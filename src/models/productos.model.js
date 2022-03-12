@@ -10,4 +10,4 @@ const productoSchema = new Schema({
     precio: Number,
 });
 
-module.esports = mongoose.model('Productos', productoSchema);
+module.exports = mongoose.model('Productos', productoSchema);
