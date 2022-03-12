@@ -13,8 +13,10 @@ const usuarioSchema = new Schema({
         precioUnitario: Number,
         subTotal: Number
     }],
-    
-    totalCarrito: Number
+    totalCarrito: Number,
+    facturas: [{
+        idFacturas: { type: Schema.Types.ObjectId, ref: 'Facturas' }
+    }]
 });
 
 module.esports = mongoose.model('Usuarios', usuarioSchema);
