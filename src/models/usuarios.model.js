@@ -14,9 +14,6 @@ const usuarioSchema = new Schema({
         subTotal: Number
     }],
     totalCarrito: Number,
-    facturas: [{
-        idFacturas: { type: Schema.Types.ObjectId, ref: 'Facturas' }
-    }]
 });
 
 module.exports = mongoose.model('Usuarios', usuarioSchema);

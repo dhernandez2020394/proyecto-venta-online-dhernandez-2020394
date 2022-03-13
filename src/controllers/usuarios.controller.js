@@ -77,9 +77,40 @@ function EliminarUsuario(req, res) {
     })
 }
 
+// METODO PARA CREAR EL ADMIN POR DEFECTO
+function crearAlIniciar(req, res) {
+    var modUsuarios = new Usuarios();
+
+    Usuarios.find({ nombre: 'ADMIN' }, (err, usuarioEncontrados) => {
+        if (usuarioEncontrados.length > 0) {
+            return console.log("Ya existe el ADMIN por defecto" );
+        } else {
+
+            modUsuarios.nombre = "ADMIN";
+            modUsuarios.apellido = null;
+            modUsuarios.email = null;
+
+            modUsuarios.totalCarrito = 0;
+            modUsuarios.rol = 'ADMIN'
+
+            bcrypt.hash('123456', null, null, (err, passwordEncriptada) => {
+                modUsuarios.password = passwordEncriptada;
+
+                modUsuarios.save((err, usuarioGuardado) => {
+                    if (err) return console.log('Error en la peticion' );
+                    if (!usuarioGuardado) return console.log( 'Error al guardar el ADMIN');
+
+                    return console.log(usuarioGuardado);
+                })
+            })
+        }
+    })
+}
+
 module.exports = {
     ObtenerUsuarios,
     AgregarUsuario,
     EditarUsuario,
-    EliminarUsuario
+    EliminarUsuario,
+    crearAlIniciar
 }

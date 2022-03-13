@@ -2,6 +2,9 @@ const express = require('express');
 const cors = require('cors');
 const app = express();
 
+//IMPORTAR EL MODELO USUARIOS
+const Usuarios = require('./src/controllers/usuarios.controller');
+
 // IMPORTACION RUTAS
 const categoriasRoutes = require('./src/routes/categorias.routes');
 const productosRoutes = require('./src/routes/productos.routes');
@@ -16,5 +19,8 @@ app.use(cors());
 
 // CARGA DE RUTAS localhost:3000/api/
 app.use('/api', categoriasRoutes, productosRoutes, usuariosRoutes);
+
+//CREAR UN USUARIO POR DEFECTO AL INICIAR LA APLICACION
+Usuarios.crearAlIniciar();
 
 module.exports = app;
