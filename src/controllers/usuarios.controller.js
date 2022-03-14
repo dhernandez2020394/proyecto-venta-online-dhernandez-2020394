@@ -7,23 +7,23 @@ const jwt = require('../services/jwt');
 function Login(req, res) {
     var parametros = req.body;
     // BUSCAMOS EL CORREO
-    Usuario.findOne({ email : parametros.email }, (err, usuarioEncontrado) => {
-        if(err) return res.status(500).send({ mensaje: 'Error en la peticion'});
-        if (usuarioEncontrado){
+    Usuarios.findOne({ email: parametros.email }, (err, usuarioEncontrado) => {
+        if (err) return res.status(500).send({ mensaje: 'Error en la peticion' });
+        if (usuarioEncontrado) {
             // COMPARAMOS CONTRASENA SIN ENCRIPTAR CON LA ENCRIPTADA
-            bcrypt.compare(parametros.password, usuarioEncontrado.password, 
+            bcrypt.compare(parametros.password, usuarioEncontrado.password,
                 (err, verificacionPassword) => {//TRUE OR FALSE
                     if (verificacionPassword) {
                         return res.status(200)
                             .send({ token: jwt.crearToken(usuarioEncontrado) })
                     } else {
                         return res.status(500)
-                            .send({ mensaje: 'La contrasena no coincide.'})
+                            .send({ mensaje: 'La contrasena no coincide.' })
                     }
                 })
         } else {
             return res.status(500)
-                .send({ mensaje: 'El usuario, no se ha podido identificar'})
+                .send({ mensaje: 'El usuario, no se ha podido identificar' })
         }
     })
 }
@@ -81,39 +81,59 @@ function EditarUsuario(req, res) {
 
     delete parametros.password
 
-    Usuarios.findByIdAndUpdate(idUser, parametros, { new: true }, (err, usuarioEditado) => {
-        if (err) return res.status(500).send({ mensaje: 'Error en la peticion' });
-        if (!usuarioEditado) return res.status(404).send({ mensaje: 'Error al Editar el Usuario' });
+    if (req.user.rol == "ADMIN") {
+        delete parametros.nombre;
+        delete parametros.apellido;
+        delete parametros.email;
+        delete parametros.Carrito;
+        delete parametros.totalCarrito;
 
-        return res.status(200).send({ usuario: usuarioEditado });
-    })
+        Usuarios.findByIdAndUpdate(idUser, parametros, { new: true }, (err, usuarioEditado) => {
+            if (err) return res.status(500).send({ mensaje: 'Error en la peticion' });
+            if (!usuarioEditado) return res.status(404).send({ mensaje: 'Error al Editar el Usuario' });
+            return res.status(200).send({ usuario: usuarioEditado });
+        })
+    } if (req.user.rol == "Cliente") {
+        delete parametros.rol;
+        Usuarios.findByIdAndUpdate(idUser, parametros, { new: true }, (err, usuarioEditado) => {
+            if (err) return res.status(500).send({ mensaje: 'Error en la peticion' });
+            if (!usuarioEditado) return res.status(404).send({ mensaje: 'Error al Editar el Usuario' });
+
+            return res.status(200).send({ usuario: usuarioEditado });
+        })
+    }
+
+
 }
 
 // ELIMINAR UN USUARIO
 function EliminarUsuario(req, res) {
     var idUser = req.params.idUsuario;
+    if (req.user.rol == "Cliente") {
+        Usuarios.findByIdAndDelete(idUser, (err, usuarioEliminado) => {
+            if (err) return res.status(500).send({ mensaje: 'Error en la peticion' });
+            if (!usuarioEliminado) return res.status(500)
+                .send({ mensaje: 'Error al Eliminar el Usuario' })
 
-    Usuarios.findByIdAndDelete(idUser, (err, usuarioEliminado) => {
-        if (err) return res.status(500).send({ mensaje: 'Error en la peticion' });
-        if (!usuarioEliminado) return res.status(500)
-            .send({ mensaje: 'Error al Eliminar el Usuario' })
-
-        return res.status(200).send({ usuario: usuarioEliminado });
-    })
+            return res.status(200).send({ usuario: usuarioEliminado });
+        })
+    } else {
+        return res.send({ mensaje: "No está autorizado para realizar está accion" })
+    }
 }
 
 // METODO PARA CREAR EL ADMIN POR DEFECTO
 function crearAdminAlIniciar(req, res) {
     var modUsuarios = new Usuarios();
 
-    Usuarios.find({ nombre: 'ADMIN' }, (err, usuarioEncontrados) => {
+    Usuarios.find({ email: 'ADMIN' }, (err, usuarioEncontrados) => {
         if (usuarioEncontrados.length > 0) {
-            return console.log("Ya existe el ADMIN por defecto" );
+            return console.log("Ya existe el ADMIN por defecto");
         } else {
 
             modUsuarios.nombre = "ADMIN";
             modUsuarios.apellido = null;
-            modUsuarios.email = null;
+            modUsuarios.email = "ADMIN";
 
             modUsuarios.totalCarrito = 0;
             modUsuarios.rol = 'ADMIN'
@@ -122,8 +142,8 @@ function crearAdminAlIniciar(req, res) {
                 modUsuarios.password = passwordEncriptada;
 
                 modUsuarios.save((err, usuarioGuardado) => {
-                    if (err) return console.log('Error en la peticion' );
-                    if (!usuarioGuardado) return console.log( 'Error al guardar el ADMIN');
+                    if (err) return console.log('Error en la peticion');
+                    if (!usuarioGuardado) return console.log('Error al guardar el ADMIN');
 
                     return console.log(usuarioGuardado);
                 })
