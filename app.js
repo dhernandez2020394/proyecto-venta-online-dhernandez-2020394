@@ -4,6 +4,7 @@ const app = express();
 
 //IMPORTAR EL MODELO USUARIOS
 const Usuarios = require('./src/controllers/usuarios.controller');
+const Categorias = require('./src/controllers/categorias.controller');
 
 // IMPORTACION RUTAS
 const categoriasRoutes = require('./src/routes/categorias.routes');
@@ -20,7 +21,8 @@ app.use(cors());
 // CARGA DE RUTAS localhost:3000/api/
 app.use('/api', categoriasRoutes, productosRoutes, usuariosRoutes);
 
-//CREAR UN USUARIO POR DEFECTO AL INICIAR LA APLICACION
-Usuarios.crearAlIniciar();
+//CREAR VALORES POR DEFECTO AL INICIAR LA APLICACION
+Usuarios.crearAdminAlIniciar();
+Categorias.crearCategoriaAlIniciar();
 
 module.exports = app;

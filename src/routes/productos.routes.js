@@ -13,5 +13,7 @@ api.delete('/eliminarProducto/:idProducto', productosController.EliminarProducto
 // FUNCIONES EXTRA
 api.get('/producto/:idProducto', productosController.ObtenerProducto);
 api.put('/editarStockProducto', productosController.EditarStockProducto);
+api.put('/agregarCategoriaProducto/:idProducto/:idCategoria', productosController.agregarCategoriaProducto);
+api.put('/editarCategoriaProducto/:idCategoria', productosController.editarCategoriaProducto);
 
 module.exports = api;

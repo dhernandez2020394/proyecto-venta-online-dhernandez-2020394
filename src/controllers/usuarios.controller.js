@@ -3,6 +3,31 @@ const Usuarios = require('../models/usuarios.model.js');
 const bcrypt = require('bcrypt-nodejs');
 const jwt = require('../services/jwt');
 
+// LOGIN
+function Login(req, res) {
+    var parametros = req.body;
+    // BUSCAMOS EL CORREO
+    Usuario.findOne({ email : parametros.email }, (err, usuarioEncontrado) => {
+        if(err) return res.status(500).send({ mensaje: 'Error en la peticion'});
+        if (usuarioEncontrado){
+            // COMPARAMOS CONTRASENA SIN ENCRIPTAR CON LA ENCRIPTADA
+            bcrypt.compare(parametros.password, usuarioEncontrado.password, 
+                (err, verificacionPassword) => {//TRUE OR FALSE
+                    if (verificacionPassword) {
+                        return res.status(200)
+                            .send({ token: jwt.crearToken(usuarioEncontrado) })
+                    } else {
+                        return res.status(500)
+                            .send({ mensaje: 'La contrasena no coincide.'})
+                    }
+                })
+        } else {
+            return res.status(500)
+                .send({ mensaje: 'El usuario, no se ha podido identificar'})
+        }
+    })
+}
+
 //  OBTENER TODAS LOS USUARIOS
 function ObtenerUsuarios(req, res) {
     Usuarios.find({}, (err, todosLosUsuarios) => {
@@ -78,7 +103,7 @@ function EliminarUsuario(req, res) {
 }
 
 // METODO PARA CREAR EL ADMIN POR DEFECTO
-function crearAlIniciar(req, res) {
+function crearAdminAlIniciar(req, res) {
     var modUsuarios = new Usuarios();
 
     Usuarios.find({ nombre: 'ADMIN' }, (err, usuarioEncontrados) => {
@@ -108,9 +133,10 @@ function crearAlIniciar(req, res) {
 }
 
 module.exports = {
+    Login,
     ObtenerUsuarios,
     AgregarUsuario,
     EditarUsuario,
     EliminarUsuario,
-    crearAlIniciar
+    crearAdminAlIniciar
 }

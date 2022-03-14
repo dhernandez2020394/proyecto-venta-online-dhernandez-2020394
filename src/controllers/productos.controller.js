@@ -1,4 +1,5 @@
 const Productos = require('../models/productos.model.js');
+const Categoria = require('./categorias.controller')
 
 //  OBTENER TODAS LOS PRODUCTOS
 function ObtenerProductos(req, res) {
@@ -33,6 +34,7 @@ function AgregarProducto(req, res) {
         } else {
 
             if (parametros.nombre && parametros.cantidad && parametros.precio) {
+              
                 modProductos.nombre = parametros.nombre;
                 modProductos.cantidad = parametros.cantidad;
                 modProductos.precio = parametros.precio;
@@ -48,6 +50,20 @@ function AgregarProducto(req, res) {
     })
 }
 
+// AGREGAR CATEGORIA A UN PRODUCTO
+function agregarCategoriaProducto(req, res) {
+    var productoId = req.params.idProducto;
+    var categoriaId = req.params.idCategoria;
+
+    Productos.findByIdAndUpdate(productoId, { $push: {  categoria : { idCategoria: categoriaId } } }, {new : true}, 
+        (err, proveedorAgregado) => {
+            if(err) return res.status(500).send({ mensaje: 'Error en  la peticion'});
+            if(!proveedorAgregado) return res.status(500).send({ mensaje: 'Error al agregar el proveedor al producto'});
+
+            return res.status(200).send({ product: proveedorAgregado });
+        })
+}
+
 // EDITAR UN PRODUCTO
 function EditarProducto(req, res) {
     var idProd = req.params.idProducto;
@@ -60,6 +76,21 @@ function EditarProducto(req, res) {
 
         return res.status(200).send({ producto: productoEditado });
     })
+}
+
+// EDITAR CATEGORIA DEL PRODUCTO
+function editarCategoriaProducto(req, res) {
+   const categoriaId = req.params.idCategoria;
+   const parametros = req.body;
+
+   Productos.findOneAndUpdate({categoria: {$elemMatch: {idCategoria: categoriaId }}},
+        {"categoria.$.idCategoria": parametros.categoria}, {new: true}, (err, categoriaAcualizada)=>{
+            console.log(err)
+            if(err) return res.status(500).send({ mensaje: 'Error en  la peticion'});
+            if(!categoriaAcualizada) return res.status(500).send({ mensaje: 'Error al editar el producto'});
+
+            return res.status(200).send({ producto: categoriaAcualizada });
+        })
 }
 
 function EditarStockProducto(req, res) {
@@ -87,11 +118,14 @@ function EliminarProducto(req, res) {
     })
 }
 
+
 module.exports = {
     ObtenerProductos,
     AgregarProducto,
     EditarProducto,
     EliminarProducto,
     ObtenerProducto,
-    EditarStockProducto
+    EditarStockProducto,
+    agregarCategoriaProducto,
+    editarCategoriaProducto
 }
