@@ -9,14 +9,16 @@ const md_autenticacion = require('../middlewares/Authentication');
 const api = express.Router();
 
 api.get('/productos', productosController.ObtenerProductos);
-api.post('/agregarProducto', md_autenticacion, productosController.AgregarProducto);
-api.put('/editarProducto/:idProducto', md_autenticacion, productosController.EditarProducto);
-api.delete('/eliminarProducto/:idProducto',md_autenticacion, productosController.EliminarProducto);
+api.post('/agregarProducto', md_autenticacion.Auth, productosController.AgregarProducto);
+api.put('/editarProducto/:idProducto', md_autenticacion.Auth, productosController.EditarProducto);
+api.delete('/eliminarProducto/:idProducto',md_autenticacion.Auth, productosController.EliminarProducto);
 
 // FUNCIONES EXTRA
 api.get('/producto/:idProducto', productosController.ObtenerProducto);
-api.put('/editarStockProducto', md_autenticacion, productosController.EditarStockProducto);
-api.put('/agregarCategoriaProducto/:idProducto/:idCategoria',md_autenticacion, productosController.agregarCategoriaProducto);
-api.put('/editarCategoriaProducto/:idCategoria', md_autenticacion, productosController.editarCategoriaProducto);
+api.put('/editarStockProducto', md_autenticacion.Auth, productosController.EditarStockProducto);
+api.put('/agregarCategoriaProducto/:idProducto/:idCategoria',md_autenticacion.Auth, productosController.agregarCategoriaProducto);
+api.put('/editarCategoriaProducto/:idCategoria', md_autenticacion.Auth, productosController.editarCategoriaProducto);
+api.put('/eliminarCategoriaProducto/:idCategoria', md_autenticacion.Auth, productosController.eliminarCategoriaProducto);
+
 
 module.exports = api;

@@ -9,7 +9,8 @@ const Categorias = require('./src/controllers/categorias.controller');
 // IMPORTACION RUTAS
 const categoriasRoutes = require('./src/routes/categorias.routes');
 const productosRoutes = require('./src/routes/productos.routes');
-const usuariosRoutes = require('./src/routes/usuarios.routes')
+const usuariosRoutes = require('./src/routes/usuarios.routes');
+const carritRoutes = require('./src/routes/carritos.routes');
 
 // MIDDLEWARES
 app.use(express.urlencoded({ extended: false}));
@@ -19,7 +20,7 @@ app.use(express.json());
 app.use(cors());
 
 // CARGA DE RUTAS localhost:3000/api/
-app.use('/api', categoriasRoutes, productosRoutes, usuariosRoutes);
+app.use('/api', categoriasRoutes, productosRoutes, usuariosRoutes, carritRoutes);
 
 //CREAR VALORES POR DEFECTO AL INICIAR LA APLICACION
 Usuarios.crearAdminAlIniciar();

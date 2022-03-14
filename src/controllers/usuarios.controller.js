@@ -1,4 +1,5 @@
 const Usuarios = require('../models/usuarios.model.js');
+const Carrito = require('./carritos.controller');
 
 const bcrypt = require('bcrypt-nodejs');
 const jwt = require('../services/jwt');
@@ -41,6 +42,7 @@ function AgregarUsuario(req, res) {
     var parametros = req.body;
     var modUsuarios = new Usuarios();
 
+
     if (parametros.nombre && parametros.apellido && parametros.email && parametros.password) {
 
         Usuarios.find({ email: parametros.email }, (err, usuarioEncontrados) => {
@@ -52,7 +54,6 @@ function AgregarUsuario(req, res) {
                 modUsuarios.apellido = parametros.apellido;
                 modUsuarios.email = parametros.email;
 
-                modUsuarios.totalCarrito = 0;
                 modUsuarios.rol = 'Cliente'
 
                 bcrypt.hash(parametros.password, null, null, (err, passwordEncriptada) => {
@@ -63,7 +64,7 @@ function AgregarUsuario(req, res) {
                             .send({ mensaje: 'Error en la peticion' })
                         if (!usuarioGuardado) return res.status(500)
                             .send({ mensaje: 'Error al guardar el Usuario' })
-
+                        Carrito.iniciarCarrito(usuarioGuardado);
                         return res.status(200).send({ usuario: usuarioGuardado })
                     })
                 })
@@ -72,6 +73,7 @@ function AgregarUsuario(req, res) {
     } else {
         return res.status(500).send({ mensaje: "Debe ingresar todos los datos obligatorios" })
     }
+
 }
 
 // EDITAR UN USUARIO
@@ -85,8 +87,6 @@ function EditarUsuario(req, res) {
         delete parametros.nombre;
         delete parametros.apellido;
         delete parametros.email;
-        delete parametros.Carrito;
-        delete parametros.totalCarrito;
 
         Usuarios.findByIdAndUpdate(idUser, parametros, { new: true }, (err, usuarioEditado) => {
             if (err) return res.status(500).send({ mensaje: 'Error en la peticion' });
@@ -135,7 +135,6 @@ function crearAdminAlIniciar(req, res) {
             modUsuarios.apellido = null;
             modUsuarios.email = "ADMIN";
 
-            modUsuarios.totalCarrito = 0;
             modUsuarios.rol = 'ADMIN'
 
             bcrypt.hash('123456', null, null, (err, passwordEncriptada) => {

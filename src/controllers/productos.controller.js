@@ -1,6 +1,8 @@
 const Productos = require('../models/productos.model.js');
 const Categoria = require('./categorias.controller')
 
+const jwt = require('../services/jwt');
+
 //  OBTENER TODAS LOS PRODUCTOS
 function ObtenerProductos(req, res) {
     Productos.find({}, (err, todosLosProductos) => {
@@ -143,6 +145,35 @@ function EliminarProducto(req, res) {
     }
 }
 
+// ELIMINAR CATEGORIAS DE PRODUCTOS
+function eliminarCategoriaProducto(req, res){
+    const idProducto = req.params.idProducto;
+
+    if (req.user.rol == "ADMIN") {
+    Productos.findOneAndUpdate({ categoria : { $elemMatch : { _id: idProducto } } }, 
+        { $pull : { categoria : { _id : idProducto } } }, {new : true}, (err, categoriaEliminada)=>{
+            if(err) return res.status(500).send({ mensaje: 'Error en la peticion'});
+            if(!categoriaEliminada) return res.status(500).send({ mensaje: 'Error al eliminar el Proveedor'});
+
+            return res.status(200).send({producto : categoriaEliminada})
+        })
+    } else {
+        return res.send({ mensaje: "No está autorizado para realizar está accion" })
+    }
+}
+
+function stockProducto(req, res) {
+    const productoId = req.params.idProducto;
+    const parametros = req.body;
+
+    Productos.findByIdAndUpdate(productoId, { $inc : {cantidad : parametros.cantidad} }, {new : true},
+        (err, stockModificado)=>{
+            if(err) return res.status(500).send({ mensaje: 'Error en la peticion'});
+            if(!stockModificado) return res.status(500).send({mensaje: 'Error incrementar la cantidad del producto'});
+
+            return res.status(200).send({ producto: stockModificado })
+        })
+}
 
 module.exports = {
     ObtenerProductos,
@@ -152,5 +183,6 @@ module.exports = {
     ObtenerProducto,
     EditarStockProducto,
     agregarCategoriaProducto,
-    editarCategoriaProducto
+    editarCategoriaProducto,
+    eliminarCategoriaProducto
 }
